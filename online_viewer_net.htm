@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <title>تست شخصیت خودرو - همه پارت</title>
+    <style>
+        body {
+            font-family: Tahoma, Arial, sans-serif;
+            text-align: center;
+            direction: rtl;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        img {
+            max-width: 150px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .question {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .option {
+            display: block;
+            margin: 10px 0;
+            text-align: right;
+        }
+        .step {
+            font-size: 14px;
+            color: gray;
+        }
+        input[type="radio"] {
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="welcome">
+        <img src="logo-1024x1024.png" alt="Hame Part Logo">
+        <h1>همه پارت</h1>
+        <p>به تست شخصیت خودرویی خوش آمدید! این تست به شما کمک می‌کند تا بفهمید شخصیت شما شبیه کدام خودرو است. آماده‌اید؟</p>
+        <button onclick="showPhoneInput()">شروع تست</button>
+    </div>
+
+    <div class="container" id="phone" style="display: none;">
+        <h2>شماره موبایل خود را وارد کنید:</h2>
+        <input type="tel" id="phoneInput" placeholder="مثلاً: 09123456789">
+        <br>
+        <button onclick="validatePhone()">تأیید و ادامه</button>
+    </div>
+
+    <div class="container" id="quiz" style="display: none;">
+        <div id="questionContainer"></div>
+        <div class="step" id="stepCounter"></div>
+        <button onclick="nextQuestion()">بعدی</button>
+    </div>
+
+    <div class="container" id="result" style="display: none;">
+        <h2>نتیجه تست:</h2>
+        <p id="resultText"></p>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                text: "ترجیح می‌دهید رانندگی در چه شرایطی باشد؟",
+                options: ["مسیرهای طولانی و باز", "شهرهای شلوغ", "مسیرهای آفرود"]
+            },
+            {
+                text: "چه نوع موتوری را ترجیح می‌دهید؟",
+                options: ["قدرتمند و پر شتاب", "کم مصرف و اقتصادی", "موتور دیزل برای مسیرهای دشوار"]
+            },
+            {
+                text: "چقدر به ظاهر خودرو اهمیت می‌دهید؟",
+                options: ["خیلی زیاد", "تا حدودی", "زیاد مهم نیست"]
+            },
+            {
+                text: "آیا به برند خودرو اهمیت می‌دهید؟",
+                options: ["بله، برند مهم است", "نه خیلی", "اصلاً"]
+            },
+            {
+                text: "آیا امکانات رفاهی برایتان مهم است؟",
+                options: ["بسیار مهم", "نه چندان", "اصلاً"]
+            },
+            {
+                text: "دوست دارید خودروی شما در چه سطح قیمتی باشد؟",
+                options: ["لوکس و گران", "میانه", "مقرون به صرفه"]
+            },
+            {
+                text: "دوست دارید رنگ خودرویتان چه باشد؟",
+                options: ["رنگ‌های متالیک", "رنگ‌های تیره", "رنگ‌های خنثی"]
+            },
+            {
+                text: "ترجیح می‌دهید ماشینتان چند نفره باشد؟",
+                options: ["5 نفره", "2 نفره", "7 نفره"]
+            },
+            {
+                text: "دوست دارید ماشین شما چه حسی به شما بدهد؟",
+                options: ["هیجان و سرعت", "آرامش و راحتی", "قدرت و استقامت"]
+            },
+            {
+                text: "به نظرتان مهمترین ویژگی ماشین چیست؟",
+                options: ["سرعت", "امنیت", "توانایی در جاده‌های سخت"]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answers = [];
+
+        function showPhoneInput() {
+            document.getElementById('welcome').style.display = 'none';
+            document.getElementById('phone').style.display = 'block';
+        }
+
+        function validatePhone() {
+            const phone = document.getElementById('phoneInput').value;
+            if (/^09\d{9}$/.test(phone)) {
+                alert('کد تأیید ارسال شد (شبیه‌سازی)');
+                showQuiz();
+            } else {
+                alert('لطفاً شماره معتبر وارد کنید.');
+            }
+        }
+
+        function showQuiz() {
+            document.getElementById('phone').style.display = 'none';
+            document.getElementById('quiz').style.display = 'block';
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            const container = document.getElementById('questionContainer');
+            container.innerHTML = `<div class="question">${q.text}</div>`;
+            q.options.forEach((opt, index) => {
+                container.innerHTML += `
+                    <label class="option">
+                        <input type="radio" name="option" value="${index}">
+                        ${opt}
+                    </label>
+                `;
+            });
+            document.getElementById('stepCounter').innerText = `سؤال ${currentQuestion + 1}/${questions.length}`;
+        }
+
+        function nextQuestion() {
+            const selected = document.querySelector('input[name="option"]:checked');
+            if (!selected) {
+                alert('لطفاً یک گزینه انتخاب کنید.');
+                return;
+            }
+            answers.push(parseInt(selected.value));
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('quiz').style.display = 'none';
+            document.getElementById('result').style.display = 'block';
+
+            // محاسبه نتیجه (ساده)
+            const sum = answers.reduce((a, b) => a + b, 0);
+            let car = "";
+            let reason = "";
+
+            if (sum <= 10) {
+                car = "پورشه 911";
+                reason = "شما عاشق سرعت و هیجان هستید و دوست دارید در جاده‌ها بدرخشید.";
+            } else if (sum <= 20) {
+                car = "تویوتا کمری";
+                reason = "شما به راحتی و کیفیت اهمیت می‌دهید و انتخابی مطمئن دارید.";
+            } else if (sum <= 30) {
+                car = "لندکروزر";
+                reason = "شما اهل ماجراجویی و سفرهای آفرود هستید.";
+            } else {
+                car = "پراید";
+                reason = "شما واقع‌بین هستید و به کارایی و اقتصادی بودن اهمیت می‌دهید.";
+            }
+
+            document.getElementById('resultText').innerHTML = `شخصیت خودرویی شما: <strong>${car}</strong><br>${reason}`;
+        }
+    </script>
+</body>
+</html>
